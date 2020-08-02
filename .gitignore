@@ -8,6 +8,9 @@
 *.ipynb
 *.tar
 *.tar.gz
+*.jpeg
+*.jpg
+*.png
 settings
 
 
