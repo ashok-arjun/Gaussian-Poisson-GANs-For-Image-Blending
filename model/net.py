@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 def get_network(config):
   # parse the config file, pass it to the networks and return the G and D
-  image_size, num_encoder_filters, num_bottleneck, num_output_channels = config['image_size'], config['num_encoder_filters'], config['num_bottleneck'], config['num_output_channels']
+  image_size, num_encoder_filters, num_bottleneck, num_output_channels = config.OUTPUT_SIZE, config.NUM_FILTERS, config.NUM_BOTTLENECK, config.NUM_OUTPUT_CHANNELS
   return Generator(image_size, num_encoder_filters, num_bottleneck, num_output_channels), Discriminator(image_size, num_encoder_filters, num_bottleneck)
 
 
