@@ -46,12 +46,12 @@ class BlendingDataset(torch.utils.data.Dataset):
     bg_cropped = self.scale_and_crop(bg, rw, rh, sx, sy)
 
     '''COPY THE CENTER OF THE OBJECT IMAGE TO THE CENTER OF THE BACKGROUND IMAGE; CENTER HERE REFERS TO STARTING POINT + CENTER CROP SIZE'''
-    object_in_background = bg_cropped.copy()
-    object_in_background[:, self.start_center_crop:self.start_center_crop + self.center_square_size, self.start_center_crop:self.start_center_crop + self.center_square_size] = obj_cropped[:,
+    composite_image = bg_cropped.copy()
+    composite_image[:, self.start_center_crop:self.start_center_crop + self.center_square_size, self.start_center_crop:self.start_center_crop + self.center_square_size] = obj_cropped[:,
                                                                                     self.start_center_crop:self.start_center_crop + self.center_square_size,
                                                                                     self.start_center_crop:self.start_center_crop + self.center_square_size]
 
-    return torch.from_numpy(object_in_background), torch.from_numpy(bg_cropped)
+    return torch.from_numpy(composite_image), torch.from_numpy(bg_cropped)
 
 
   def __len__(self):
