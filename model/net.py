@@ -47,10 +47,10 @@ class GenericEncoder(nn.Module):
       in_channels = out_channels
       out_channels *= 2
 
-    layers.append(nn.Conv2d(out_channels, num_encoder_filters, 4, stride=1, padding=0, bias = False))
+    layers.append(nn.Conv2d(out_channels//2, num_bottleneck, 4, stride=1, padding=0, bias = False))
 
 
-    self.net = nn.Sequential(layers)
+    self.net = nn.Sequential(*layers)
 
   def forward(self, x):
     # CHECK AGAIN, AS THIS IS TREATED AS AN FC LAYER
@@ -78,22 +78,21 @@ class Decoder(nn.Module):
     layers.append(nn.ReLU())
 
     in_channels = out_channels
-    out_channels = out_channels * 2
-
+    out_channels = out_channels // 2
 
     while(cur_image_size < image_size // 2):
       layers.append(nn.ConvTranspose2d(in_channels, out_channels, 4, stride=2, padding=1, bias = False))
       layers.append(nn.BatchNorm2d(out_channels))
       layers.append(nn.ReLU())
 
-      cur_image_size /= 2
+      cur_image_size *= 2
       in_channels = out_channels
-      out_channels = out_channels * 2
+      out_channels = out_channels // 2
 
-    layers.append(nn.ConvTranspose2d(out_channels, num_output_channels, 4, stride=2, padding=1, bias = False))
+    layers.append(nn.ConvTranspose2d(out_channels*2, num_output_channels, 4, stride=2, padding=1, bias = False))
     layers.append(nn.Tanh())     
 
-    self.net = nn.Sequential(layers)
+    self.net = nn.Sequential(*layers)
 
   def forward(self, x):
     return self.net(x)
@@ -105,16 +104,14 @@ class Discriminator(nn.Module):
     self.net = GenericEncoder(image_size, num_encoder_filters, num_bottleneck)
 
   def forward(self, x):
-    x = self.net(x)
-    
-    # see what to do here - return only one regressed value(critic)
+    x = self.net(x)   
 
-    return x
+    return x.squeeze() # returns only batch_size values(the critic value by the WGAN)
 
 
 '''GENERATOR'''
 class Generator(nn.Module):
-  def __init__(self, image_size, num_encoder_filters, num_bottleneck, num_output_channels):
+  def __init__(self, image_size, num_encoder_filters, num_decoder_filters, num_bottleneck, num_output_channels):
     super(Generator, self).__init__()
     self.encoder = GenericEncoder(image_size, num_encoder_filters, num_bottleneck)
     self.bn = nn.BatchNorm2d(num_bottleneck)
