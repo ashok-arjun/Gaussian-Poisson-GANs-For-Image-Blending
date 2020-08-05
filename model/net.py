@@ -16,9 +16,9 @@ def weights_init(m):
 
 def get_network(config):
   '''Parse the config file, pass it to the networks and return the G and D'''
-  image_size, num_encoder_filters, num_bottleneck, num_output_channels = config.OUTPUT_SIZE, config.NUM_FILTERS, config.NUM_BOTTLENECK, config.NUM_OUTPUT_CHANNELS
-  generator = Generator(image_size, num_encoder_filters, num_bottleneck, num_output_channels) 
-  discriminator = Discriminator(image_size, num_encoder_filters, num_bottleneck)
+  image_size, num_encoder_filters, num_decoder_filters, num_bottleneck, num_output_channels = config.OUTPUT_SIZE, config.NUM_ENCODER_FILTERS, config.NUM_DECODER_FILTERS, config.NUM_BOTTLENECK, config.NUM_OUTPUT_CHANNELS
+  generator = Generator(image_size, num_encoder_filters, num_decoder_filters, num_bottleneck, num_output_channels) 
+  discriminator = Discriminator(image_size, num_encoder_filters,  num_bottleneck)
   
   generator.apply(weights_init)
   discriminator.apply(weights_init)
