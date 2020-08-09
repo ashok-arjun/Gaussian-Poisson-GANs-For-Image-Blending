@@ -7,7 +7,7 @@ import os
 import glob
 import math
 
-from config import *
+# from config import *
 
 class BlendingDataset(torch.utils.data.Dataset):
   def __init__(self, num_samples, folders, data_dir, center_square_ratio, scaling_size, output_size):
