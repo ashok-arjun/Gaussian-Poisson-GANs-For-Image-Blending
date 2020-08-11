@@ -9,7 +9,7 @@
 Data
 </summary>
 
-[The Transient Attributes dataset](http://transattr.cs.brown.edu/files/aligned_images.tar)
+[The Transient Attributes dataset](http://transattr.cs.brown.edu/files/aligned_images.tar) - 1.8 GB
 
 Once it is downloaded, extract the .tar file and crop the images by executing the following code:
 
