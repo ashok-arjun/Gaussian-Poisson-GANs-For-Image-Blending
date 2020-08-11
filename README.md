@@ -19,12 +19,18 @@ from crop_images import crop_images
 crop_images('path_to_imageAlignedLD_folder', 'path_to_result_folder')
 ```
 <br>
+</details>
+<details>
 
 <summary>
 Training
 </summary>
 
+</details>
+
+<details>
 
 <summary>
 Inference
 </summary>
+</details>
