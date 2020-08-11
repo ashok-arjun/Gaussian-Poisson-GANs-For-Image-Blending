@@ -1,3 +1,9 @@
+# TODO: wandb logging of losses, averaging the losses
+
+import time
+import datetime
+import pytz 
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,6 +13,9 @@ import torch.nn.functional as F
 from model.dataloader import Dataloaders
 from model.net import get_network
 from model.loss import G_loss, D_loss
+
+# from test import test_GAN
+from utils import *
 
 class Trainer:
   def __init__(self, config):
@@ -43,7 +52,7 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 20 if g_iters < 25 or g_iters % 500 == 0 else config.D_ITERS  ####### CHANGE TO 100
+        num_d_iters = 20 if g_iters < 25 or g_iters % 500 == 0 else config.D_ITERS   # CONFIRM - SHOULD BE 100
         d_iter = 0
 
         while(d_iter < num_d_iters and batch_index < num_train_batches):
@@ -62,7 +71,6 @@ class Trainer:
             disc_param.data.clamp_(config.D_CLAMP_RANGE[0], config.D_CLAMP_RANGE[1]) # ENFORCE LIPSCHITZ CONSTRAINT BY CLIPPING WEIGHTS
 
           d_iter += 1; batch_index += 1
-          print('D_iter: %d, D_real_loss: %f, D_fake_loss %f' % (d_iter, D_real_loss, D_fake_loss))
 
         ###########################
           # (1) Update G 
@@ -86,17 +94,13 @@ class Trainer:
 
         g_iters += 1; batch_index += 1
 
-
-
-        if batch_index % config.PRINT_EVERY == 0:
-          # PRINT TIME HERE
+        if g_iters % config.PRINT_EVERY == 0: 
+          print(datetime.datetime.now(pytz.timezone('Asia/Kolkata')), end = ' ')
           print('Epoch: %d[%d/%d]; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
           % (epoch, batch_index, num_train_batches, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item())) 
 
-          # PRINT/LOG AVERAGED LOSSES
-
       # END OF EPOCH
-      # CALL TEST FUNCTION AND ACCUMULATE THE BATCHES USING .stack() AND HERE, PROCESS IT ALONG WITH THE IMAGES, AND DISPLAY RANDOM k
+      # CALL TEST FUNCTION - POSSIBLY FOR MASKED BLENDS
 
-      print('-----End of Epoch: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
-          % (epoch, l2_loss.item(), D_real_loss.item(), D_fake_loss.item()))
+      print('-----End of Epoch: %d; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
+          % (epoch, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item()))
