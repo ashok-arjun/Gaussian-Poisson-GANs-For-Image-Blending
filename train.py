@@ -9,12 +9,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+import wandb
 
 from model.dataloader import Dataloaders
 from model.net import get_network
 from model.loss import G_loss, D_loss
 
-# from test import test_GAN
+from test import test_GAN
 from utils import *
 
 class Trainer:
@@ -45,6 +46,7 @@ class Trainer:
     '''TRAINING'''
     g_iters = 0
     for epoch in range(config.START_EPOCH,config.NUM_EPOCHS):
+      G.train() # since this is switched to eval in the test_GAN() method
       data_iter = iter(train_dataloader)
       batch_index = 0
 
@@ -98,9 +100,24 @@ class Trainer:
           print(datetime.datetime.now(pytz.timezone('Asia/Kolkata')), end = ' ')
           print('Epoch: %d[%d/%d]; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
           % (epoch, batch_index, num_train_batches, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item())) 
+          wandb.log({'Generator L2 loss': l2_loss.item()}, step = g_iters)    
+          wandb.log({'Discriminator Real loss': D_real_loss.item()}, step = g_iters)    
+          wandb.log({'Fake Loss': D_fake_loss.item()}, step = g_iters)    
 
       # END OF EPOCH
-      # CALL TEST FUNCTION - POSSIBLY FOR MASKED BLENDS
-
       print('-----End of Epoch: %d; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
           % (epoch, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item()))
+      print('Validating...')
+      destinations, composites, predicted_blends = test_GAN(G, self.dataloaders, config)
+      grids = get_k_random_grids(destinations, composites, predicted_blends, k = config.LOGGING_K)
+      log_images(grids, g_iters)
+
+def log_images(images, wandb_step):
+  '''
+  Prints/Logs the PIL Images one by one
+  '''
+  for image in images:
+    plt.figure()
+    plt.imshow(image)     
+
+  wandb.log({'Validation images': [wandb.Image(image) for image in images]}, step = wandb_step)      
