@@ -4,6 +4,9 @@ Blending composite images(copy-paste images/foreign objects in a scene) using a 
 
 The GAN gives a low-res blend, which is then passed to the post-hoc Gaussian-Poisson component which iteratively upsamples using the Laplacian pyramid of the object's image and the scene's image, while solving an optimization problem to estimate the low-frequency signals(i.e. using a Gaussian blur) of the GAN's output and estimating the high-frequency signals(i.e. image gradient) of the composite(copy-paste) image using the pyramid.
 
+# Results
+
+(1-2-3 image)
 
 # Instructions
 
