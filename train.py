@@ -1,5 +1,3 @@
-# TODO: wandb logging of losses, averaging the losses
-
 import time
 import datetime
 import pytz 
@@ -116,8 +114,8 @@ def log_images(images, wandb_step):
   '''
   Prints/Logs the PIL Images one by one
   '''
-  for image in images:
-    plt.figure()
-    plt.imshow(image)     
+#   for image in images:
+#     plt.figure()
+#     plt.imshow(image)     
 
   wandb.log({'Validation images': [wandb.Image(image) for image in images]}, step = wandb_step)      
