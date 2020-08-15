@@ -27,7 +27,7 @@ def test_GAN(G, dataloaders, config):
     pred_blended_images = G(composite_images)
     predictions.append(pred_blended_images)
 
-    if iteration % config.PRINT_EVERY == 0:
-      print('Iteration [%d/%d] complete' % (iteration, num_val_batches))
+    # if iteration % config.PRINT_EVERY == 0:
+    #   print('Iteration [%d/%d] complete' % (iteration, num_val_batches))
 
   return torch.cat(destinations, dim = 0), torch.cat(composites, dim = 0), torch.cat(predictions, dim = 0) 

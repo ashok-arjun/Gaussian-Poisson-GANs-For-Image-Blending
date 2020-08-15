@@ -16,6 +16,8 @@ from model.loss import G_loss, D_loss
 from test import test_GAN
 from utils import *
 
+import matplotlib.pyplot as plt
+
 class Trainer:
   def __init__(self, config):
     self.dataloaders = Dataloaders(config)
@@ -52,10 +54,10 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 20 if g_iters < 25 or g_iters % 500 == 0 else config.D_ITERS   # CONFIRM - SHOULD BE 100
+        num_d_iters = 100 if g_iters < 25 or g_iters % 500 == 0 else config.D_ITERS
         d_iter = 0
 
-        while(d_iter < num_d_iters and batch_index < num_train_batches):
+        while(d_iter < num_d_iters and batch_index < num_train_batches - 1):
           optim_D.zero_grad()
                   
           composite, bg = next(data_iter)
@@ -76,7 +78,7 @@ class Trainer:
           # (1) Update G 
         ###########################
 
-        if batch_index == num_train_batches:
+        if batch_index >= num_train_batches - 1:
           break
 
         optim_G.zero_grad()
@@ -99,8 +101,8 @@ class Trainer:
           print('Epoch: %d[%d/%d]; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
           % (epoch, batch_index, num_train_batches, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item())) 
           wandb.log({'Generator L2 loss': l2_loss.item()}, step = g_iters)    
-          wandb.log({'Discriminator Real loss': D_real_loss.item()}, step = g_iters)    
-          wandb.log({'Fake Loss': D_fake_loss.item()}, step = g_iters)    
+          wandb.log({'Discriminator Real Critic': D_real_loss.item()}, step = g_iters)    
+          wandb.log({'Discriminator Fake Critic': D_fake_loss.item()}, step = g_iters)    
 
       # END OF EPOCH
       print('-----End of Epoch: %d; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
@@ -109,13 +111,14 @@ class Trainer:
       destinations, composites, predicted_blends = test_GAN(G, self.dataloaders, config)
       grids = get_k_random_grids(destinations, composites, predicted_blends, k = config.LOGGING_K)
       log_images(grids, g_iters)
+      print('Done validating...\n\n\n')
 
 def log_images(images, wandb_step):
   '''
   Prints/Logs the PIL Images one by one
   '''
-#   for image in images:
-#     plt.figure()
-#     plt.imshow(image)     
+  # for image in images:
+  #   plt.figure()
+  #   plt.imshow(image)     
 
   wandb.log({'Validation images': [wandb.Image(image) for image in images]}, step = wandb_step)      
