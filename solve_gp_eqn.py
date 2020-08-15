@@ -27,10 +27,10 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
   dest_gradients = get_gradients_sobel(dest)
   
   '2'
-  composite_gradients = src_gradients * mask + dest_gradients * (1 - mask)
-  
+  composite_gradients = src_gradients * mask[:,:,np.newaxis,np.newaxis] + dest_gradients * (1 - mask[:,:,np.newaxis,np.newaxis])
+
   '3'
-  size, dtype = composite_gradients.size[:2], composite_gradients.dtype
+  size, dtype = composite_gradients.shape[:2], composite_gradients.dtype
   lap = laplacian_operator(size, dtype)
   gauss = gaussian_operator(size, dtype, gaussian_sigma) 
 
@@ -54,7 +54,7 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
 
 def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_weight = 1, gaussian_filter_sigma = 0.5, laplacian_gaussian_sigma = 1):
   
-  '''READ IMAGES IN [-1,1] RANGE'''
+  '''READ IMAGES IN [0,1] RANGE'''
   src = read_image(src_path)
   dest = read_image(dest_path)
   mask = read_image(mask_path)  
@@ -70,20 +70,20 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
   '''GET COPY PASTE IMAGE AS INPUT FOR THE GAN'''
   mask_2d = resize_image(mask, (GAN_input_size, GAN_input_size), order = 0)[:, :, np.newaxis] # order is 0 as the image is a bool
   composite_image = src_pyramid[0] * mask_2d + dest_pyramid[0] * (1 - mask_2d)
-  composite_image = torch.from_numpy(transpose(convert_range_GAN(composite_image))).to(device)
+  composite_image = torch.from_numpy(transpose(convert_range_GAN(composite_image))).unsqueeze(0).to(device)
 
 
   '''RUN THE GAN'''
   G.to(device); G.eval()
-  blended_image = G(composite_image)
-  blended_image = np.clip(np.transpose((blended_image.cpu().squeeze().numpy() + 1) / 2, (1,2,0)), 0, 1)
+  with torch.no_grad():
+    blended_image = G(composite_image)
   blended_image = convert_range_normal(untranspose(blended_image.cpu().squeeze().numpy())) # back to [0,1] range
 
   '''SOLVE THE G-P EQUATION AT EACH STAGE OF THE LAPLACIAN PYRAMID'''
   # AT EVERY LEVEL, THE GAN IMAGE(BLENDED IMAGE) AND THE MASK IMAGE SHOULD BE RESIZED TO THE LEVEL'S SIZE(THE SRC AND DEST ARE ALREADY IN THAT SIZE,
   # GIVEN BY THE PYRAMID )
 
-  for level in range(max_pyramid_level + 1): # plus 1 for the actual image 
+  for level in range(max_pyramid_level + 1): # plus 1 for the actual image, alternatively this can be range(len(src_pyramid))
     cur_size = src_pyramid[level].shape[:2]
     cur_mask = resize_image(mask, cur_size, order = 0)
     blended_image = resize_image(blended_image, cur_size, order = 3)

@@ -28,7 +28,7 @@ def convert_range_GAN(np_array):
   return np.clip((np_array * 2 - 1), -1, 1)
 
 def read_image(path):
-  image = imread(path)
+  image = skimage.img_as_float(imread(path))
   return image.astype(np.float32)
 
 def resize_image(im, image_size, order=3, dtype=None):
@@ -76,7 +76,7 @@ def gaussian_operator(size, dtype, smoothing_sigma):
   operator = np.zeros((2 * w, 2 * h)).astype(dtype)
 
   operator[1,1] = 1
-  operator[:3, :3] = gaussian(operator[:3, :3], smoothing_sigmas)
+  operator[:3, :3] = gaussian(operator[:3, :3], smoothing_sigma)
   operator = np.roll(operator, -1, axis = 0)
   operator = np.roll(operator, -1, axis = 1)
 
@@ -109,7 +109,7 @@ def get_laplacian_pyramid(image, max_level, GAN_image_size, smoothing_sigma):
   image_pyramid = [image]
   diff_pyramid = []
 
-  for i in range(max_level + 1, -1, -1):
+  for i in range(max_level - 1, -1, -1):
     cur_size = (GAN_image_size * (2 ** i), GAN_image_size * (2 ** i))
     smoothed = gaussian(image_pyramid[-1], smoothing_sigma, multichannel = True)
     diff = image_pyramid[-1] - smoothed
