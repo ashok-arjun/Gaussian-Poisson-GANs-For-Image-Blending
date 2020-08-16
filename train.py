@@ -54,7 +54,7 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 100 if g_iters < 25 or g_iters % 500 == 0 else config.D_ITERS
+        num_d_iters = 50 if g_iters < 15 or g_iters % 500 == 0 else config.D_ITERS
         d_iter = 0
 
         while(d_iter < num_d_iters and batch_index < num_train_batches - 1):
@@ -112,6 +112,11 @@ class Trainer:
       grids = get_k_random_grids(destinations, composites, predicted_blends, k = config.LOGGING_K)
       log_images(grids, g_iters)
       print('Done validating...\n\n\n')
+
+      save_checkpoint({'iteration': g_iters,
+                       'G': G.state_dict(),
+                       'D': D.state_dict(),
+                       }, 'experiments', Truesssss)
 
 def log_images(images, wandb_step):
   '''
