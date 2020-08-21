@@ -44,7 +44,7 @@ class Trainer:
     print('Training..')
 
     '''TRAINING'''
-    g_iters = 0
+    g_iters = -1
     for epoch in range(config.START_EPOCH,config.NUM_EPOCHS):
       G.train() 
       data_iter = iter(train_dataloader)
@@ -54,7 +54,7 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 100 if g_iters < 20 or g_iters % 500 == 0 else config.D_ITERS
+        num_d_iters = 10 if g_iters < 20 or g_iters % 500 == 0 else config.D_ITERS
         d_iter = 0
 
         while(d_iter < num_d_iters and batch_index < num_train_batches):
@@ -98,27 +98,27 @@ class Trainer:
 
         if g_iters % config.PRINT_EVERY == 0: 
           print(datetime.datetime.now(pytz.timezone('Asia/Kolkata')), end = ' ')
-          print('Epoch: %d[%d/%d]; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
+          print('Epoch: %d[%d/%d]; G_iter_index: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
           % (epoch, batch_index, num_train_batches, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item())) 
           wandb.log({'Generator L2 loss': l2_loss.item()}, step = g_iters)    
           wandb.log({'Discriminator Real Critic': D_real_loss.item()}, step = g_iters)    
           wandb.log({'Discriminator Fake Critic': D_fake_loss.item()}, step = g_iters)    
 
       # END OF EPOCH
-      print('-----End of Epoch: %d; G_iters: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
+      print('-----End of Epoch: %d; G_iter_index: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
           % (epoch, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item()))
       print('Validating...')
       destinations, composites, predicted_blends = test_GAN(G, self.dataloaders, config)
       grids = get_k_random_grids(destinations, composites, predicted_blends, k = config.LOGGING_K)
       log_images(grids, g_iters)
-      print('Done validating...\n\n\n')
+      print('Done validating...')
 
       save_checkpoint({'iteration': g_iters,
                        'G': G.state_dict(),
                        'D': D.state_dict(),
                        }, 'experiments', True)
 
-      print('Epoch %d saved to cloud' % (epoch))
+      print('Epoch %d saved to cloud\n\n\n' % (epoch))
 
 def log_images(images, wandb_step):
   '''
