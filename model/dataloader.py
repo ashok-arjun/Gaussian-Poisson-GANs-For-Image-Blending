@@ -7,7 +7,8 @@ import os
 import glob
 import math
 
-# from config import *
+
+import time
 
 class BlendingDataset(torch.utils.data.Dataset):
   def __init__(self, num_samples, folders, data_dir, center_square_ratio, scaling_size, output_size):
@@ -29,6 +30,7 @@ class BlendingDataset(torch.utils.data.Dataset):
     return np.transpose(image, (2, 0, 1)).astype(np.float32)
 
   def __getitem__(self, idx):
+    start_time = time.time()
     '''READ THE OBJECT AND THE BACKGROUND IMAGES'''
     obj_path, bg_path = self.samples[idx]
     obj = imread(obj_path); bg = imread(bg_path)
@@ -50,7 +52,6 @@ class BlendingDataset(torch.utils.data.Dataset):
     composite_image[:, self.start_center_crop:self.start_center_crop + self.center_square_size, self.start_center_crop:self.start_center_crop + self.center_square_size] = obj_cropped[:,
                                                                                     self.start_center_crop:self.start_center_crop + self.center_square_size,
                                                                                     self.start_center_crop:self.start_center_crop + self.center_square_size]
-
     return torch.from_numpy(composite_image), torch.from_numpy(bg_cropped)
 
 

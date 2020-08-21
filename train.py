@@ -46,7 +46,7 @@ class Trainer:
     '''TRAINING'''
     g_iters = 0
     for epoch in range(config.START_EPOCH,config.NUM_EPOCHS):
-      G.train() # since this is switched to eval in the test_GAN() method
+      G.train() 
       data_iter = iter(train_dataloader)
       batch_index = 0
 
@@ -54,10 +54,10 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 50 if g_iters < 15 or g_iters % 500 == 0 else config.D_ITERS
+        num_d_iters = 100 if g_iters < 20 or g_iters % 500 == 0 else config.D_ITERS
         d_iter = 0
 
-        while(d_iter < num_d_iters and batch_index < num_train_batches - 1):
+        while(d_iter < num_d_iters and batch_index < num_train_batches):
           optim_D.zero_grad()
                   
           composite, bg = next(data_iter)
@@ -78,7 +78,7 @@ class Trainer:
           # (1) Update G 
         ###########################
 
-        if batch_index >= num_train_batches - 1:
+        if batch_index == num_train_batches:
           break
 
         optim_G.zero_grad()
@@ -116,7 +116,9 @@ class Trainer:
       save_checkpoint({'iteration': g_iters,
                        'G': G.state_dict(),
                        'D': D.state_dict(),
-                       }, 'experiments', Truesssss)
+                       }, 'experiments', True)
+
+      print('Epoch %d saved to cloud' % (epoch))
 
 def log_images(images, wandb_step):
   '''
