@@ -62,7 +62,7 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 50 if g_iters < 20 or g_iters % 500 == 0 else config.D_ITERS
+        num_d_iters = 75 if g_iters < 15 or g_iters % 500 == 0 else config.D_ITERS
         d_iter = 0
 
         while(d_iter < num_d_iters and batch_index < num_train_batches):
