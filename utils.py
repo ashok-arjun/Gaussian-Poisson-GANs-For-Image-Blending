@@ -29,8 +29,8 @@ def load_checkpoint(checkpoint, G, D, optim_G, optim_D):
   checkpoint = torch.load(checkpoint)
   G.load_state_dict(checkpoint['G'])
   D.load_state_dict(checkpoint['D'])
-  optim_G.load_state_dict(checkpoint['optim_G'])
-  optim_D.load_state_dict(checkpoint['optim_D'])
+  optim_G.load_state_dict(checkpoint['optim_G'].state_dict())
+  optim_D.load_state_dict(checkpoint['optim_D'].state_dict())
 
   return checkpoint['iteration']
 
