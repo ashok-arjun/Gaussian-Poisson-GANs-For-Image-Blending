@@ -13,7 +13,7 @@ from model.dataloader import Dataloaders
 from model.net import get_network
 from model.loss import G_loss, D_loss
 
-from test import test_GAN
+from infer import test_GAN
 from utils import *
 
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ class Trainer:
     self.dataloaders = Dataloaders(config)
     self.config = config
 
-  def train(self):
+  def train(self, checkpoint = None):
     config = self.config
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -41,10 +41,18 @@ class Trainer:
     optim_D = optim.Adam(params = D.parameters(), lr = config.G_LR, betas=(config.ADAM_BETA1, 0.999))
 
     G.train(); D.train()
-    print('Training..')
+    g_iters = -1
+
+    
+    '''CHECKPOINT LOADING'''
+    if checkpoint:
+      g_iters = load_checkpoint(checkpoint, G, D, optim_G, optim_D)
 
     '''TRAINING'''
-    g_iters = -1
+    print('Training..')
+    accum_l2_loss = RunningAverage()
+    accum_real_critic = RunningAverage()
+    accum_fake_critic = RunningAverage()
     for epoch in range(config.START_EPOCH,config.NUM_EPOCHS):
       G.train() 
       data_iter = iter(train_dataloader)
@@ -54,7 +62,7 @@ class Trainer:
         ###########################
           # (1) Update D 
         ###########################
-        num_d_iters = 10 if g_iters < 20 or g_iters % 500 == 0 else config.D_ITERS
+        num_d_iters = 50 if g_iters < 20 or g_iters % 500 == 0 else config.D_ITERS
         d_iter = 0
 
         while(d_iter < num_d_iters and batch_index < num_train_batches):
@@ -66,6 +74,8 @@ class Trainer:
           G_z = G(composite); D_G_z = D(G_z); D_x = D(bg)
           
           discrim_loss, D_real_loss, D_fake_loss = D_loss(D_x, D_G_z) # this is the critic difference(encapsulated as a combined loss)
+          accum_real_critic.update(D_real_loss)
+          accum_fake_critic.update(D_fake_loss)
           discrim_loss.backward()
           optim_D.step()
 
@@ -91,6 +101,7 @@ class Trainer:
         D_G_z = D(G_z)
         
         gen_loss, l2_loss, _ = G_loss(bg, G_z, D_G_z) # this is L2 loss between the blend and the background, with the adversarial loss
+        accum_l2_loss.update(l2_loss)
         gen_loss.backward()
         optim_G.step()
 
@@ -100,13 +111,13 @@ class Trainer:
           print(datetime.datetime.now(pytz.timezone('Asia/Kolkata')), end = ' ')
           print('Epoch: %d[%d/%d]; G_iter_index: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
           % (epoch, batch_index, num_train_batches, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item())) 
-          wandb.log({'Generator L2 loss': l2_loss.item()}, step = g_iters)    
-          wandb.log({'Discriminator Real Critic': D_real_loss.item()}, step = g_iters)    
-          wandb.log({'Discriminator Fake Critic': D_fake_loss.item()}, step = g_iters)    
+          wandb.log({'Generator L2 loss': accum_l2_loss()}, step = g_iters)    
+          wandb.log({'Discriminator Real Critic': accum_real_critic()}, step = g_iters)    
+          wandb.log({'Discriminator Fake Critic': accum_fake_critic()}, step = g_iters)    
 
       # END OF EPOCH
       print('-----End of Epoch: %d; G_iter_index: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
-          % (epoch, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item()))
+          % (epoch, g_iters, accum_l2_loss(), accum_real_critic(), accum_fake_critic()))
       print('Validating...')
       destinations, composites, predicted_blends = test_GAN(G, self.dataloaders, config)
       grids = get_k_random_grids(destinations, composites, predicted_blends, k = config.LOGGING_K)
@@ -116,6 +127,8 @@ class Trainer:
       save_checkpoint({'iteration': g_iters,
                        'G': G.state_dict(),
                        'D': D.state_dict(),
+                       'optim_G': optim_G,
+                       'optim_D': optim_D
                        }, 'experiments', True)
 
       print('Epoch %d saved to cloud\n\n\n' % (epoch))

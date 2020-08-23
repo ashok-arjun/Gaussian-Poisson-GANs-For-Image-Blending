@@ -23,15 +23,16 @@ def save_checkpoint(state, checkpoint_dir, save_to_cloud = False):
     torch.save(state, os.path.join(wandb.run.dir, filename))
     wandb.save(filename)
 
-def load_checkpoint(checkpoint, G, D):
+def load_checkpoint(checkpoint, G, D, optim_G, optim_D):
   if not os.path.exists(checkpoint):
       raise("File doesn't exist {}".format(checkpoint))
   checkpoint = torch.load(checkpoint)
-  print('Loading checkpoint from %d generator iterations'%(checkpoint['iteration']))
   G.load_state_dict(checkpoint['G'])
   D.load_state_dict(checkpoint['D'])
+  optim_G.load_state_dict(checkpoint['optim_G'])
+  optim_D.load_state_dict(checkpoint['optim_D'])
 
-  return checkpoint
+  return checkpoint['iteration']
 
 def get_k_random_grids(destinations, composites, predicted_blends, k = 5):
   '''
