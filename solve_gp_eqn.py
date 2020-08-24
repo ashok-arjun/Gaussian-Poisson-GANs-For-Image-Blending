@@ -6,6 +6,7 @@ Uses the laplacian pyramid, and solves the GP equation(color + gradients) at eve
 import torch
 import math
 import numpy as np
+import matplotlib.pyplot as plt
 
 from vision_utils import *
 
@@ -52,12 +53,12 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
 
   return result
 
-def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_weight = 1, gaussian_filter_sigma = 0.5, laplacian_gaussian_sigma = 1):
+def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_weight = 1, gaussian_filter_sigma = 0.5, laplacian_gaussian_sigma = 1, direct_flag = False):
   
   '''READ IMAGES IN [0,1] RANGE'''
   src = read_image(src_path)
   dest = read_image(dest_path)
-  mask = read_image(mask_path)  
+  mask = read_mask(mask_path)  
   
   w_image, h_image, _ = src.shape
 
@@ -79,6 +80,7 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
     blended_image = G(composite_image)
   blended_image = convert_range_normal(untranspose(blended_image.cpu().squeeze().numpy())) # back to [0,1] range
 
+  if direct_flag: blended_image = convert_range_normal(untranspose(composite_image.cpu().squeeze().numpy()))
   '''SOLVE THE G-P EQUATION AT EACH STAGE OF THE LAPLACIAN PYRAMID'''
   # AT EVERY LEVEL, THE GAN IMAGE(BLENDED IMAGE) AND THE MASK IMAGE SHOULD BE RESIZED TO THE LEVEL'S SIZE(THE SRC AND DEST ARE ALREADY IN THAT SIZE,
   # GIVEN BY THE PYRAMID )
@@ -87,7 +89,6 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
     cur_size = src_pyramid[level].shape[:2]
     cur_mask = resize_image(mask, cur_size, order = 0)
     blended_image = resize_image(blended_image, cur_size, order = 3)
-    
     blended_image = solve_equation(src_pyramid[level], dest_pyramid[level], cur_mask, blended_image, color_weight, gaussian_filter_sigma)
 
   blended_image = np.clip(blended_image * 255, 0, 255).astype(np.uint8)

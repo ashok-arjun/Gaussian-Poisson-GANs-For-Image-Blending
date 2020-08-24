@@ -22,15 +22,20 @@ def untranspose(np_array):
   return np.transpose(np_array, (1, 2, 0))
 
 def convert_range_normal(np_array):
+  '''Converts to [0, 1] range from [-1, 1] range'''
   return np.clip((np_array + 1)/2, 0, 1)
 
 def convert_range_GAN(np_array):
+  '''Converts to [-1, 1] range from [0, 1] range'''
   return np.clip((np_array * 2 - 1), -1, 1)
 
 def read_image(path):
   image = skimage.img_as_float(imread(path))
   return image.astype(np.float32)
 
+def read_mask(path):
+  return imread(path).astype(np.float32)
+  
 def resize_image(im, image_size, order=3, dtype=None):
   '''Resizes the image - bilinear/bicubic given by order'''
   im = resize(im, image_size, preserve_range=True, order=order, mode='constant')
