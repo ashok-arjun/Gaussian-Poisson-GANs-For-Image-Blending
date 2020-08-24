@@ -33,3 +33,4 @@ D_CLAMP_RANGE = [-0.01, 0.01] # IMPORTANT
 PRINT_EVERY = 10 # gen_iter iterations 
 LOGGING_K = 5
 CHECKPOINT_DIR = 'experiments'
+SAVE_TO_CLOUD_EVERY = 5 # EPOCHS
