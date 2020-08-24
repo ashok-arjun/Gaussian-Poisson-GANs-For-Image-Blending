@@ -130,7 +130,7 @@ class Trainer:
                        'D': D.state_dict(),
                        'optim_G': optim_G.state_dict(),
                        'optim_D': optim_D.state_dict()
-                       }, 'experiments', True)
+                       }, config.CHECKPOINT_DIR)
 
       print('Epoch %d saved to cloud\n\n\n' % (epoch))
 
