@@ -47,7 +47,7 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
   result = np.zeros(blended_image.shape)
 
   for chnl in range(result.shape[2]):
-    result[:,:,chnl] = (dct2(divergence_v[:,:,chnl]) + color_weight * dct2(blended_image[:,:,chnl]))/lap_gauss_operator
+    result[:,:,chnl] = idct2((dct2(divergence_v[:,:,chnl]) + color_weight * dct2(blended_image[:,:,chnl]))/lap_gauss_operator)
 
   result = np.clip(result, 0, 1)
 
