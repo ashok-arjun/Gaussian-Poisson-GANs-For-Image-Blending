@@ -7,6 +7,7 @@ import torch
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage.io import imread, imsave, imshow
 
 from vision_utils import *
 
@@ -24,8 +25,8 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
   '''
 
   '1'
-  src_gradients = get_gradients_sobel(src)
-  dest_gradients = get_gradients_sobel(dest)
+  src_gradients = get_gradients_roberts(src)
+  dest_gradients = get_gradients_roberts(dest)
   
   '2'
   composite_gradients = src_gradients * mask[:, :, np.newaxis, np.newaxis] + dest_gradients * (1 - mask[:, :, np.newaxis, np.newaxis])
@@ -59,8 +60,8 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
   '''READ IMAGES IN [0,1] RANGE'''
   src = read_image(src_path)
   dest = read_image(dest_path)
-  mask = read_mask(mask_path)  
-  
+  mask = read_mask(mask_path, src.dtype)
+
   w_image, h_image, _ = src.shape
 
   '''CONSTRUCT LAPLACIAN(GAUSSIAN) PYRAMIDS'''
@@ -76,12 +77,13 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
 
 
   '''RUN THE GAN'''
-  G.to(device); G.eval()
-  with torch.no_grad():
-    blended_image = G(composite_image)
-  blended_image = convert_range_normal(untranspose(blended_image.cpu().squeeze().numpy())) # back to [0,1] range
+  # G.to(device); G.eval()
+  # with torch.no_grad():
+  #   blended_image = G(composite_image)
+  # blended_image = convert_range_normal(untranspose(blended_image.cpu().squeeze().numpy())) # back to [0,1] range
 
   if direct_flag: blended_image = convert_range_normal(untranspose(composite_image.cpu().squeeze().numpy()))
+
   '''SOLVE THE G-P EQUATION AT EACH STAGE OF THE LAPLACIAN PYRAMID'''
   # AT EVERY LEVEL, THE GAN IMAGE(BLENDED IMAGE) AND THE MASK IMAGE SHOULD BE RESIZED TO THE LEVEL'S SIZE(THE SRC AND DEST ARE ALREADY IN THAT SIZE,
   # GIVEN BY THE PYRAMID )
@@ -91,6 +93,7 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
     cur_mask = resize_image(mask, cur_size, order = 0)
     blended_image = resize_image(blended_image, cur_size, order = 3)
     blended_image = solve_equation(src_pyramid[level], dest_pyramid[level], cur_mask, blended_image, color_weight, gaussian_filter_sigma)
+
 
   blended_image = np.clip(blended_image * 255, 0, 255).astype(np.uint8)
 

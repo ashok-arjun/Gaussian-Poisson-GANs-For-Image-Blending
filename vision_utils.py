@@ -13,7 +13,7 @@ import skimage
 from skimage.io import imread
 from skimage.transform import resize
 from scipy.fftpack import dct, idct
-from skimage.filters import gaussian, sobel_h, sobel_v
+from skimage.filters import gaussian, roberts_pos_diag, roberts_neg_diag
 
 def transpose(np_array):
   return np.transpose(np_array, (2, 0, 1))
@@ -31,10 +31,10 @@ def convert_range_GAN(np_array):
 
 def read_image(path):
   image = skimage.img_as_float(imread(path))
-  return image.astype(np.float32)
+  return image
 
-def read_mask(path):
-  return imread(path, as_gray = True).astype(np.float32)
+def read_mask(path, dtype):
+  return imread(path, as_gray = True).astype(dtype)
   
 def resize_image(im, image_size, order=3, dtype=None):
   '''Resizes the image - bilinear/bicubic given by order'''
@@ -96,9 +96,9 @@ def filter_2d(image, filter_func):
 
   return gradients
 
-def get_gradients_sobel(image):
-  '''Returns the image filtered with the Sobel kernel in the horizontal axis and the vertical axis i.e. the gradients'''
-  horizontal_filter, vertical_filter = sobel_h, sobel_v
+def get_gradients_roberts(image):
+  '''Returns the image filtered with the roberts kernel i.e. edge detector'''
+  horizontal_filter, vertical_filter = roberts_pos_diag, roberts_neg_diag
 
   output = np.zeros((*image.shape, 2)) 
 
