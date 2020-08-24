@@ -17,8 +17,8 @@ class RunningAverage():
     return self.sum/self.count  
 
 
-def save_checkpoint(state, checkpoint_dir, save_to_cloud = False, epoch_index = -1):
-  filename = 'epoch_%d.pth.tar' % (epoch_index)
+def save_checkpoint(state, checkpoint_dir, save_to_cloud = False):
+  filename = 'last.pth.tar'
   torch.save(state, os.path.join(checkpoint_dir, filename))
   if save_to_cloud:
     torch.save(state, os.path.join(wandb.run.dir, filename))
@@ -28,6 +28,7 @@ def load_checkpoint(checkpoint, G, D, optim_G, optim_D):
   if not os.path.exists(checkpoint):
       raise("File doesn't exist {}".format(checkpoint))
   checkpoint = torch.load(checkpoint)
+  print('Restoring from the end of epoch %d' % (checkpoint['epoch']))
   G.load_state_dict(checkpoint['G'])
   D.load_state_dict(checkpoint['D'])
   optim_G.load_state_dict(checkpoint['optim_G'])
