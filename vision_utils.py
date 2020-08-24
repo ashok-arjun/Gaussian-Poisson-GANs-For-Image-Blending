@@ -97,7 +97,7 @@ def filter_2d(image, filter_func):
   return gradients
 
 def get_gradients_sobel(image):
-  '''Returns the Sobel filtered image along with the colour feature(i.e. the GAN image in our case) as list of images'''
+  '''Returns the image filtered with the Sobel kernel in the horizontal axis and the vertical axis i.e. the gradients'''
   horizontal_filter, vertical_filter = sobel_h, sobel_v
 
   output = np.zeros((*image.shape, 2)) 
