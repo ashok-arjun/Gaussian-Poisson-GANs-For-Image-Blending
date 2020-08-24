@@ -28,7 +28,7 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
   dest_gradients = get_gradients_sobel(dest)
   
   '2'
-  composite_gradients = src_gradients * mask[:,:,np.newaxis,np.newaxis] + dest_gradients * (1 - mask[:,:,np.newaxis,np.newaxis])
+  composite_gradients = src_gradients * mask[:, :, np.newaxis, np.newaxis] + dest_gradients * (1 - mask[:, :, np.newaxis, np.newaxis])
 
   '3'
   size, dtype = composite_gradients.shape[:2], composite_gradients.dtype
@@ -37,10 +37,11 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
 
   '4'
 
-
+  composite_gradients_H = composite_gradients[:,:,:,0]
+  composite_gradients_V = composite_gradients[:,:,:,1]
   divergence_v = \
-  (np.roll(composite_gradients[:,:,:,0], 1, axis = 1)-composite_gradients[:,:,:,0]) + \
-  (np.roll(composite_gradients[:,:,:,1], 1, axis = 0)-composite_gradients[:,:,:,1])
+  (np.roll(composite_gradients_H, 1, axis = 1)-composite_gradients_H) + \
+  (np.roll(composite_gradients_V, 1, axis = 0)-composite_gradients_V)
 
   lap_gauss_operator = lap + color_weight*gauss
 

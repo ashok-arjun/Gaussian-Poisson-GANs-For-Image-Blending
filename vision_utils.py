@@ -34,7 +34,7 @@ def read_image(path):
   return image.astype(np.float32)
 
 def read_mask(path):
-  return imread(path).astype(np.float32)
+  return imread(path, as_gray = True).astype(np.float32)
   
 def resize_image(im, image_size, order=3, dtype=None):
   '''Resizes the image - bilinear/bicubic given by order'''
