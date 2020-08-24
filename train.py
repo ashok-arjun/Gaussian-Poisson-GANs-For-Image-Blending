@@ -124,12 +124,13 @@ class Trainer:
       log_images(grids, g_iters)
       print('Done validating...')
 
-      save_checkpoint({'iteration': g_iters,
+      save_checkpoint({'epoch': epoch,
+                       'iteration': g_iters,
                        'G': G.state_dict(),
                        'D': D.state_dict(),
                        'optim_G': optim_G.state_dict(),
                        'optim_D': optim_D.state_dict()
-                       }, 'experiments', True, epoch_index = epoch)
+                       }, 'experiments', True)
 
       print('Epoch %d saved to cloud\n\n\n' % (epoch))
 
