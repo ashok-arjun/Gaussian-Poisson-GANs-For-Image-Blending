@@ -130,9 +130,9 @@ class Trainer:
                        'D': D.state_dict(),
                        'optim_G': optim_G.state_dict(),
                        'optim_D': optim_D.state_dict()
-                       }, config.CHECKPOINT_DIR)
+                       }, config.CHECKPOINT_DIR, save_to_cloud = (epoch % config.SAVE_TO_CLOUD_EVERY == 0))
 
-      print('Epoch %d saved to cloud\n\n\n' % (epoch))
+      print('Epoch %d saved.\n\n\n' % (epoch))
 
 def log_images(images, wandb_step):
   '''
