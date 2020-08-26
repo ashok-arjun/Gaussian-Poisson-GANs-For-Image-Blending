@@ -20,9 +20,9 @@ class RunningAverage():
 def save_checkpoint(state, checkpoint_dir, save_to_cloud = False):
   filename = 'last.pth.tar'
   if not os.path.isdir(checkpoint_dir): os.mkdir(checkpoint_dir)
-  torch.save(state, os.path.join(checkpoint_dir, filename))
+  # torch.save(state, os.path.join(checkpoint_dir, filename))
+  torch.save(state, os.path.join(wandb.run.dir, filename))
   if save_to_cloud:
-    torch.save(state, os.path.join(wandb.run.dir, filename))
     wandb.save(filename)
 
 def load_checkpoint(checkpoint, G, D, optim_G, optim_D):
@@ -32,8 +32,8 @@ def load_checkpoint(checkpoint, G, D, optim_G, optim_D):
   print('Restoring from the end of epoch %d' % (checkpoint['epoch']))
   G.load_state_dict(checkpoint['G'])
   D.load_state_dict(checkpoint['D'])
-  optim_G.load_state_dict(checkpoint['optim_G'])
-  optim_D.load_state_dict(checkpoint['optim_D'])
+  if optim_G: optim_G.load_state_dict(checkpoint['optim_G'])
+  if optim_D: optim_D.load_state_dict(checkpoint['optim_D'])
 
   return checkpoint['iteration']
 
