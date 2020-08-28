@@ -29,7 +29,7 @@ def load_checkpoint(checkpoint, G, D, optim_G, optim_D):
   if not os.path.exists(checkpoint):
       raise("File doesn't exist {}".format(checkpoint))
   checkpoint = torch.load(checkpoint)
-  print('Restoring from the end of epoch %d' % (checkpoint['epoch']))
+  print('Restoring from the end of epoch %d and g_iters %d' % (checkpoint['epoch'], checkpoint['iteration']))
   G.load_state_dict(checkpoint['G'])
   D.load_state_dict(checkpoint['D'])
   if optim_G: optim_G.load_state_dict(checkpoint['optim_G'])
