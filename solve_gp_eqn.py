@@ -77,10 +77,10 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
 
 
   '''RUN THE GAN'''
-  # G.to(device); G.eval()
-  # with torch.no_grad():
-  #   blended_image = G(composite_image)
-  # blended_image = convert_range_normal(untranspose(blended_image.cpu().squeeze().numpy())) # back to [0,1] range
+  G.to(device); G.eval()
+  with torch.no_grad():
+    blended_image = G(composite_image.float())
+  blended_image = convert_range_normal(untranspose(blended_image.cpu().squeeze().numpy())) # back to [0,1] range
 
   if direct_flag: blended_image = convert_range_normal(untranspose(composite_image.cpu().squeeze().numpy()))
 
