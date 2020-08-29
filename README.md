@@ -50,4 +50,4 @@ The core algorithm was presented in the ACMMM 2019 paper titled
 **GP-GAN: Towards Realistic High-Resolution Image Blending**, 
 Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang
 
-[[paper]](https://arxiv.org/abs/1703.07195)
+[[paper]](https://arxiv.org/pdf/1703.07195.pdf)
