@@ -44,11 +44,11 @@ Inference
 
 # Pretrained model
 
-The pretrained model can be downloaded from [this google drive folder](https://drive.google.com/file/d/10eePae3qZEhlyoVFElpjRaHEfAOSYIXp/view?usp=sharing). The size of the model is 845 MB. The model has been trained for 33 epochs, and it took around 24 hours to train.  
+The pretrained model can be downloaded from [this google drive folder](https://drive.google.com/file/d/10eePae3qZEhlyoVFElpjRaHEfAOSYIXp/view?usp=sharing). The size of the model is **845 MB**. The model has been trained for **33 epochs**, and it took around **24 hours to train**.  
 
 # Reference
 
-The core algorithm was presented in the ACMMM 2019 paper titled
+The core algorithm was presented in the **ACMMM 2019 paper** titled
 
 **GP-GAN: Towards Realistic High-Resolution Image Blending**, 
 Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang
