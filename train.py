@@ -1,6 +1,8 @@
 import time
 import datetime
 import pytz 
+import argparse
+import config
 
 import numpy as np
 import torch
@@ -52,7 +54,7 @@ class Trainer:
     accum_l2_loss = RunningAverage()
     accum_real_critic = RunningAverage()
     accum_fake_critic = RunningAverage()
-    for epoch in range(config.START_EPOCH,config.NUM_EPOCHS):
+    for epoch in range(config.NUM_EPOCHS):
       G.train() 
       data_iter = iter(train_dataloader)
       batch_index = 0
@@ -137,4 +139,12 @@ def log_images(images):
   print('Validation set outputs: ')
   for image in images:
     plt.figure()
-    plt.imshow(image)     
+    plt.imshow(image)  
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description='Inference of Gaussian-Poisson GANs for Image Blending')
+  parser.add_argument('--checkpoint', help='Model checkpoint path', default = None)
+  args = parser.parse_args()
+
+  trainer = Trainer(config)
+  trainer.train(checkpoint = args.checkpoint)

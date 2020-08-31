@@ -112,17 +112,19 @@ if __name__ == '__main__':
   parser.add_argument('--mask', help='Mask image path', required = True)
   parser.add_argument('--model', help='Trained model path', required = True)
   parser.add_argument('--output_dir', help='Output directory', required = True)
+  parser.add_argument('--use_composite', help='Use composite image directly, ignore GAN(useful for comparison)', default = False)
 
   args = parser.parse_args()
 
   G, _ = get_network(config) 
   checkpoint = torch.load(args.model)
-  display('Loading from end of epoch %d' % (checkpoint['epoch'] + 1)) # + 1 since epoch is zero-indexed
+  print('Loading from end of epoch %d' % (checkpoint['epoch'] + 1)) # + 1 since epoch is zero-indexed
   G.load_state_dict(checkpoint['G'])
 
-  blend = get_blended_image(args.src, args.dest, args.mask, G)
+  blend = get_blended_image(args.src, args.dest, args.mask, G, direct_flag = args.use_composite)
 
   if not os.path.isdir(args.output_dir):
     os.mkdir(args.output_dir)
 
   imsave(os.path.join(args.output_dir, 'blend.png'), blend)
+  print('Done!')
