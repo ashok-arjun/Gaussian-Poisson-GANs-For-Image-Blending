@@ -1,8 +1,12 @@
 # Gaussian-Poisson-GANs-For-Image-Blending
 
-Blending composite images(copy-paste images/foreign objects in a scene) using a Wasserstein Generative Adversarial Network(GAN) and the Gaussian-Poisson equation<sup>[1]</sup>
+This project implements an algorithm for **blending composite images**(copy-paste images/foreign objects in a scene) using a **Wasserstein Generative Adversarial Network(GAN)** and **the Gaussian-Poisson equation**<sup>[1]</sup>
 
-The GAN gives a low-res blend, which is then passed to the post-hoc Gaussian-Poisson component which iteratively upsamples using the Laplacian pyramid of the object's image and the scene's image, while solving an optimization problem to estimate the low-frequency signals(i.e. using a Gaussian blur) of the GAN's output and estimating the high-frequency signals(i.e. image gradient) of the composite(copy-paste) image using the pyramid.
+# An overview of the algorithm
+
+* The **GAN** is trained to give a very **low-resolution blend**(eg. 64 x 64), given the composite image.
+
+* The **low-resolution image** is used as a **color constaint** in the **Gaussian-Poisson equation** proposed in [1]. **An optimization problem** is solved to **estimate the low-frequency signals**(i.e. using a Gaussian blur) of the **GAN's output** and to estimate the **high-frequency signals**(i.e. image gradient) of the **composite(copy-paste) image** using a **Laplacian pyramid**.
 
 # Results
 
@@ -29,13 +33,63 @@ You can crop the images by executing the following command:
 ```
 python crop_images.py --data_path path_to_imageAlignedLD_folder --output_dir path_to_output_folder
 ```
-<br>
 </details>
+
 <details>
 
 <summary>
 Training
 </summary>
+The file _config.py_ contains various options and hyperparameters that can be set to train the GAN. Here are the default parameters:
+``` 
+'''DATA'''
+CROPPED_SAMPLES_DIR = '../../../cropped_images'
+NUM_TRAIN_SAMPLES = 100 
+CENTER_SQUARE_RATIO = 0.5
+SCALING_SIZE = 64
+OUTPUT_SIZE = 64
+TRAIN_BATCH_SIZE = 8 
+TRAIN_SHUFFLE = False
+TRAIN_NUM_WORKERS = 0
+VAL_BATCH_SIZE = 8 
+VAL_SHUFFLE = False
+VAL_NUM_WORKERS = 0
+VAL_RATIO = 0.1
+NUM_VAL_SAMPLES = 64 
+
+'''NET'''
+NUM_ENCODER_FILTERS = 64
+NUM_DECODER_FILTERS = 64
+NUM_BOTTLENECK = 4000
+NUM_OUTPUT_CHANNELS = 3
+
+'''TRAINING'''
+G_LR = 5e-4 
+D_LR = 5e-4 
+ADAM_BETA1 =0.5
+NUM_EPOCHS = 15 
+D_ITERS = 5
+D_CLAMP_RANGE = [-0.01, 0.01]
+
+'''TRAINING - LOGGING'''
+
+PRINT_EVERY = 1 # gen_iter iterations 
+LOGGING_K = 5
+CHECKPOINT_DIR = 'experiments'
+```
+The parameters can be changed according to the requirements.
+
+To train, the following command should be executed:
+
+```
+python train.py
+```
+
+If it is required to resume from a model checkpoint, the checkpoint can be passed to the train script using 
+
+```
+python train.py --checkpoint checkpoint_tar_path
+```
 
 </details>
 
