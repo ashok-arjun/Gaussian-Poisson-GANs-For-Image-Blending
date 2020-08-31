@@ -20,6 +20,21 @@ This project implements an algorithm for **blending composite images**(copy-past
 
 <details>
 <summary>
+Installation
+</summary>
+
+To install, execute:
+
+```
+
+pip install -r requirements.txt
+
+```
+
+</details>
+
+<details>
+<summary>
 Data
 </summary>
   
