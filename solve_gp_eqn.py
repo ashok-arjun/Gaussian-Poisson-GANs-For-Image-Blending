@@ -97,7 +97,7 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size = 64, co
     cur_mask = resize_image(mask, cur_size, order = 0)
     blended_image = resize_image(blended_image, cur_size, order = 3)
     blended_image = solve_equation(src_pyramid[level], dest_pyramid[level], cur_mask, blended_image, color_weight, gaussian_filter_sigma)
-
+    imsave('%s.png' % (level), np.clip(blended_image * 255, 0, 255).astype(np.uint8))
 
   blended_image = np.clip(blended_image * 255, 0, 255).astype(np.uint8)
 
