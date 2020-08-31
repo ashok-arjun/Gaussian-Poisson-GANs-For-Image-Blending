@@ -1,0 +1,9 @@
+matplotlib==3.2.2
+pytz==2018.9
+scipy==1.4.1
+numpy==1.18.5
+torchvision==0.7.0+cu101
+torch==1.6.0+cu101
+scikit_image==0.16.2
+Pillow==7.2.0
+skimage==0.0

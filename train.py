@@ -7,7 +7,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import wandb
 
 from model.dataloader import Dataloaders
 from model.net import get_network
@@ -41,7 +40,7 @@ class Trainer:
     optim_D = optim.Adam(params = D.parameters(), lr = config.G_LR, betas=(config.ADAM_BETA1, 0.999))
 
     G.train(); D.train()
-    g_iters = -1
+    g_iters = 0
 
     
     '''CHECKPOINT LOADING'''
@@ -105,15 +104,12 @@ class Trainer:
         gen_loss.backward()
         optim_G.step()
 
-        g_iters += 1; batch_index += 1
+        batch_index += 1
 
         if g_iters % config.PRINT_EVERY == 0: 
           print(datetime.datetime.now(pytz.timezone('Asia/Kolkata')), end = ' ')
           print('Epoch: %d[%d/%d]; G_iter_index: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f'
           % (epoch, batch_index, num_train_batches, g_iters, l2_loss.item(), D_real_loss.item(), D_fake_loss.item())) 
-          wandb.log({'Generator L2 loss': accum_l2_loss()}, step = g_iters)    
-          wandb.log({'Discriminator Real Critic': accum_real_critic()}, step = g_iters)    
-          wandb.log({'Discriminator Fake Critic': accum_fake_critic()}, step = g_iters)    
 
       # END OF EPOCH
       print('-----End of Epoch: %d; G_iter_index: %d; G_l2_loss: %f; D_real_loss: %f; D_fake_loss: %f-----'
@@ -130,16 +126,15 @@ class Trainer:
                        'D': D.state_dict(),
                        'optim_G': optim_G.state_dict(),
                        'optim_D': optim_D.state_dict()
-                       }, config.CHECKPOINT_DIR, save_to_cloud = (epoch % config.SAVE_TO_CLOUD_EVERY == 0))
+                       }, config.CHECKPOINT_DIR)
 
       print('Epoch %d saved.\n\n\n' % (epoch))
 
-def log_images(images, wandb_step):
+def log_images(images):
   '''
   Prints/Logs the PIL Images one by one
   '''
-  # for image in images:
-  #   plt.figure()
-  #   plt.imshow(image)     
-
-  wandb.log({'Validation images': [wandb.Image(image) for image in images]}, step = wandb_step)      
+  print('Validation set outputs: ')
+  for image in images:
+    plt.figure()
+    plt.imshow(image)     

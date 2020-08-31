@@ -8,6 +8,10 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.io import imread, imsave, imshow
+import argparse
+import config
+from model.net import get_network
+import os
 
 from vision_utils import *
 
@@ -55,7 +59,7 @@ def solve_equation(src, dest, mask, blended_image, color_weight, gaussian_sigma)
 
   return result
 
-def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_weight = 1, gaussian_filter_sigma = 0.5, laplacian_gaussian_sigma = 1, direct_flag = False):
+def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size = 64, color_weight = 1, gaussian_filter_sigma = 0.5, laplacian_gaussian_sigma = 1, direct_flag = False):
   
   '''READ IMAGES IN [0,1] RANGE'''
   src = read_image(src_path)
@@ -98,3 +102,27 @@ def get_blended_image(src_path, dest_path, mask_path, G, GAN_input_size, color_w
   blended_image = np.clip(blended_image * 255, 0, 255).astype(np.uint8)
 
   return blended_image
+
+
+if __name__ == '__main__':
+
+  parser = argparse.ArgumentParser(description='Inference of Gaussian-Poisson GANs for Image Blending')
+  parser.add_argument('--src', help='Source image path', required = True)
+  parser.add_argument('--dest', help='Target image path', required = True)
+  parser.add_argument('--mask', help='Mask image path', required = True)
+  parser.add_argument('--model', help='Trained model path', required = True)
+  parser.add_argument('--output_dir', help='Output directory', required = True)
+
+  args = parser.parse_args()
+
+  G, _ = get_network(config) 
+  checkpoint = torch.load(args.model)
+  display('Loading from end of epoch %d' % (checkpoint['epoch'] + 1)) # + 1 since epoch is zero-indexed
+  G.load_state_dict(checkpoint['G'])
+
+  blend = get_blended_image(args.src, args.dest, args.mask, G)
+
+  if not os.path.isdir(args.output_dir):
+    os.mkdir(args.output_dir)
+
+  imsave(os.path.join(args.output_dir, 'blend.png'), blend)
