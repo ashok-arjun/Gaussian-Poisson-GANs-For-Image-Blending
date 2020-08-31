@@ -6,7 +6,10 @@ The GAN gives a low-res blend, which is then passed to the post-hoc Gaussian-Poi
 
 # Results
 
-(1-2-3 image)
+| Source Image    | Target Image           | Blend      |
+|:---------------:|:----------------------:|:----------:|
+|![](docs/image.png)|![](docs/gt.png)|![](docs/pred.png)|
+|![](docs/image2.png)|![](docs/gt2.png)|![](docs/pred2.png)|
 
 # Instructions
 
