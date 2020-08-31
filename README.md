@@ -1,6 +1,6 @@
 # Gaussian-Poisson-GANs-For-Image-Blending
 
-Blending composite images(copy-paste images/foreign objects in a scene) using a Wasserstein Generative Adversarial Network(GAN) and a Gaussian-Poisson equation with a Laplacian Pyramid.
+Blending composite images(copy-paste images/foreign objects in a scene) using a Wasserstein Generative Adversarial Network(GAN) and the Gaussian-Poisson equation<sup>[1]</sup>
 
 The GAN gives a low-res blend, which is then passed to the post-hoc Gaussian-Poisson component which iteratively upsamples using the Laplacian pyramid of the object's image and the scene's image, while solving an optimization problem to estimate the low-frequency signals(i.e. using a Gaussian blur) of the GAN's output and estimating the high-frequency signals(i.e. image gradient) of the composite(copy-paste) image using the pyramid.
 
@@ -54,10 +54,9 @@ The pretrained model can be downloaded from [this google drive folder](https://d
 
 The core algorithm was presented in the **ACMMM 2019 (oral) paper** titled
 
-**GP-GAN: Towards Realistic High-Resolution Image Blending**, 
-Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang
-
-[[paper]](https://arxiv.org/pdf/1703.07195.pdf)
+[1] **GP-GAN: Towards Realistic High-Resolution Image Blending**, 
+    Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang
+    [[paper]](https://arxiv.org/pdf/1703.07195.pdf)
 
 # Citation
 
