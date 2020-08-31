@@ -26,9 +26,7 @@ Installation
 To install, execute:
 
 ```
-
 pip install -r requirements.txt
-
 ```
 
 </details>
