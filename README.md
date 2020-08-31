@@ -22,7 +22,6 @@ This project implements an algorithm for **blending composite images**(copy-past
 <summary>
 Data
 </summary>
-<br>
   
 [The Transient Attributes dataset](http://transattr.cs.brown.edu/files/aligned_images.tar) - 1.8 GB
 
@@ -33,13 +32,14 @@ You can crop the images by executing the following command:
 ```
 python crop_images.py --data_path path_to_imageAlignedLD_folder --output_dir path_to_output_folder
 ```
+<br>
 </details>
-
 <details>
 
 <summary>
 Training
 </summary>
+
 The file _config.py_ contains various options and hyperparameters that can be set to train the GAN. Here are the default parameters:
 ``` 
 '''DATA'''
@@ -98,6 +98,36 @@ python train.py --checkpoint checkpoint_tar_path
 <summary>
 Inference
 </summary>
+
+For inference with a trained GAN, the following command can be executed:
+
+```
+python solve_gp_eqn.py 
+```
+
+The usage/options are as follows;
+
+```
+
+usage: solve_gp_eqn.py [-h] --src SRC --dest DEST --mask MASK --model MODEL
+                       --output_dir OUTPUT_DIR [--use_composite USE_COMPOSITE]
+
+Inference of Gaussian-Poisson GANs for Image Blending
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --src SRC             Source image path
+  --dest DEST           Target image path
+  --mask MASK           Mask image path
+  --model MODEL         Trained model path
+  --output_dir OUTPUT_DIR
+                        Output directory
+  --use_composite USE_COMPOSITE
+                        Use composite image directly, ignore GAN(useful for
+                        comparison)
+
+```
+
 </details>
 
 # Pretrained model
