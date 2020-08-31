@@ -18,7 +18,9 @@ Data
   
 [The Transient Attributes dataset](http://transattr.cs.brown.edu/files/aligned_images.tar) - 1.8 GB
 
-Once it is downloaded, extract the .tar file and crop the images by executing the following command:
+Once it is downloaded, extract the .tar file. You will find a folder named _'imageAlignedLD'_ .
+
+You can crop the images by executing the following command:
 
 ```
 python crop_images.py --data_path path_to_imageAlignedLD_folder --output_dir path_to_output_folder
@@ -46,9 +48,22 @@ The pretrained model can be downloaded from [this google drive folder](https://d
 
 # Reference
 
-The core algorithm was presented in the **ACMMM 2019 paper** titled
+The core algorithm was presented in the **ACMMM 2019 (oral) paper** titled
 
 **GP-GAN: Towards Realistic High-Resolution Image Blending**, 
 Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang
 
 [[paper]](https://arxiv.org/pdf/1703.07195.pdf)
+
+# Citation
+
+Please cite the original paper if this code is useful for your research:
+
+```
+@inproceedings{wu2017gp,
+  title     = {GP-GAN: Towards Realistic High-Resolution Image Blending},
+  author    = {Wu, Huikai and Zheng, Shuai and Zhang, Junge and Huang, Kaiqi},
+  booktitle = {ACMMM},
+  year      = {2019}
+}
+```
