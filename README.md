@@ -1,3 +1,5 @@
+<img src="https://img.shields.io/badge/python%20-%2314354C.svg?&style=for-the-badge&logo=python&logoColor=white"/> <img src="https://img.shields.io/badge/PyTorch%20-%23EE4C2C.svg?&style=for-the-badge&logo=PyTorch&logoColor=white" />
+
 # Gaussian-Poisson-GANs-For-Image-Blending
 
 This project implements an algorithm for **blending composite images**(copy-paste images/foreign objects in a scene) using a **Wasserstein Generative Adversarial Network(GAN)** and **the Gaussian-Poisson equation**<sup>[1]</sup>
