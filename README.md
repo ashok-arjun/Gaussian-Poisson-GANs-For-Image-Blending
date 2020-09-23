@@ -120,7 +120,7 @@ For inference with a trained GAN, the following command can be executed:
 python solve_gp_eqn.py 
 ```
 
-The usage/options are as follows;
+The usage/options are as follows:
 
 ```
 
@@ -128,8 +128,8 @@ usage: solve_gp_eqn.py [-h] --src SRC --dest DEST --mask MASK --model MODEL
                        --output_dir OUTPUT_DIR [--use_composite USE_COMPOSITE]
 
 Inference of Gaussian-Poisson GANs for Image Blending
-
-optional arguments:
+ 
+arguments:
   -h, --help            show this help message and exit
   --src SRC             Source image path
   --dest DEST           Target image path
@@ -137,11 +137,9 @@ optional arguments:
   --model MODEL         Trained model path
   --output_dir OUTPUT_DIR
                         Output directory
-  --use_composite USE_COMPOSITE
-                        Use composite image directly, ignore GAN(useful for
-                        comparison)
-
 ```
+
+An example source, target and mask are given in the docs folder.
 
 </details>
 
