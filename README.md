@@ -139,7 +139,7 @@ arguments:
                         Output directory
 ```
 
-An example source, target and mask are given in the docs folder.
+Example inputs(source, target, mask) are given in the ```docs/examples/1``` and ```docs/examples/2``` folders.
 
 </details>
 
