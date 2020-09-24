@@ -22,7 +22,7 @@ This project implements an algorithm for **blending composite images**(copy-past
 
 <details>
 <summary>
-Installation
+  <b>Installation</b>
 </summary>
 
 To install, execute:
@@ -35,7 +35,7 @@ pip install -r requirements.txt
 
 <details>
 <summary>
-Data
+<b>Data</b>
 </summary>
   
 [The Transient Attributes dataset](http://transattr.cs.brown.edu/files/aligned_images.tar) - 1.8 GB
@@ -52,7 +52,7 @@ python crop_images.py --data_path path_to_imageAlignedLD_folder --output_dir pat
 <details>
 
 <summary>
-Training
+<b>Training</b>
 </summary>
 
 The file _config.py_ contains various options and hyperparameters that can be set to train the GAN. Here are the default parameters:
@@ -111,7 +111,7 @@ python train.py --checkpoint checkpoint_tar_path
 <details>
 
 <summary>
-Inference
+<b>Inference</b>
 </summary>
 
 For inference with a trained GAN, the following command can be executed:
